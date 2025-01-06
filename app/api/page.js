@@ -11,27 +11,43 @@ export default function HomePage() {
     try {
       const response = await fetch('/api/getQuote');
       const data = await response.json();
-      setQuote(data.quote);
+
+      // Parse the response for quote and author
+      const [quoteText, author] = data.quote.split(' - ');
+      setQuote({ text: quoteText.trim(), author: author ? author.trim() : 'Unknown' });
     } catch (error) {
       console.error('Error fetching quote:', error);
-      setQuote('Failed to fetch a quote. Please try again later.');
+      setQuote({ text: 'Failed to fetch a quote. Please try again later.', author: null });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#f9f9f9',
+        fontFamily: 'Arial, sans-serif',
+        textAlign: 'center',
+      }}
+    >
       <button
         onClick={fetchQuote}
         style={{
-          padding: '10px 20px',
-          fontSize: '16px',
+          padding: '15px 30px',
+          fontSize: '20px',
           cursor: 'pointer',
           backgroundColor: '#0070f3',
           color: 'white',
           border: 'none',
           borderRadius: '5px',
+          marginBottom: '20px',
+          fontWeight: 'bold',
         }}
       >
         {loading ? 'Loading...' : 'Get a Quote'}
@@ -39,15 +55,17 @@ export default function HomePage() {
       {quote && (
         <div
           style={{
-            marginTop: '20px',
+            backgroundColor: '#ffffff',
             padding: '20px',
-            backgroundColor: '#f5f5f5',
             borderRadius: '10px',
-            display: 'inline-block',
-            textAlign: 'left',
+            boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+            maxWidth: '600px',
           }}
         >
-          <p>{quote}</p>
+          <p style={{ fontSize: '24px', marginBottom: '10px' }}>{quote.text}</p>
+          <p style={{ fontSize: '18px', fontStyle: 'italic', color: '#555' }}>
+            {quote.author}
+          </p>
         </div>
       )}
     </div>
