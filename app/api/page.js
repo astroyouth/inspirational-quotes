@@ -5,14 +5,18 @@ import { useState } from 'react';
 export default function HomePage() {
   const [quote, setQuote] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [interpretation, setInterpretation] = useState(null);
+  const [showInterpretation, setShowInterpretation] = useState(false);
+  const [interpretationLoading, setInterpretationLoading] = useState(false);
 
   const fetchQuote = async () => {
     setLoading(true);
+    setShowInterpretation(false);
+    setInterpretation(null);
     try {
       const response = await fetch('/api/getQuote');
       const data = await response.json();
 
-      // Parse the response for quote and author
       const [quoteText, author] = data.quote.split(' - ');
       setQuote({ text: quoteText.trim(), author: author ? author.trim() : 'Unknown' });
     } catch (error) {
@@ -20,6 +24,24 @@ export default function HomePage() {
       setQuote({ text: 'Failed to fetch a quote. Please try again later.', author: null });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchInterpretation = async () => {
+    setInterpretationLoading(true);
+    try {
+      const response = await fetch('/api/interpret', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quote: `${quote.text} - ${quote.author}` }),
+      });
+      const data = await response.json();
+      setInterpretation(data.interpretation || 'Failed to generate interpretation.');
+    } catch (error) {
+      console.error('Error fetching interpretation:', error);
+      setInterpretation('Failed to generate interpretation. Please try again later.');
+    } finally {
+      setInterpretationLoading(false);
     }
   };
 
@@ -31,7 +53,8 @@ export default function HomePage() {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        backgroundColor: '#f9f9f9',
+        // backgroundColor: '#f9f9f9',
+        backgroundColor: 'red',
         fontFamily: 'Arial, sans-serif',
         textAlign: 'center',
       }}
@@ -50,7 +73,7 @@ export default function HomePage() {
           fontWeight: 'bold',
         }}
       >
-        {loading ? 'Loading...' : 'Get a Quote'}
+        {loading ? 'Loading....' : 'Get a Quote today'}
       </button>
       {quote && (
         <div
@@ -66,6 +89,31 @@ export default function HomePage() {
           <p style={{ fontSize: '18px', fontStyle: 'italic', color: '#555' }}>
             {quote.author}
           </p>
+          <button
+            onClick={() => {
+              setShowInterpretation(!showInterpretation);
+              if (!showInterpretation && !interpretation) {
+                fetchInterpretation();
+              }
+            }}
+            style={{
+              marginTop: '10px',
+              padding: '10px 20px',
+              fontSize: '16px',
+              cursor: 'pointer',
+              backgroundColor: '#555',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+            }}
+          >
+            {showInterpretation ? 'Hide Interpretation' : 'Reveal Interpretation'}
+          </button>
+          {showInterpretation && (
+            <div style={{ marginTop: '15px', fontSize: '16px', color: '#333' }}>
+              {interpretationLoading ? 'Loading interpretation...' : interpretation}
+            </div>
+          )}
         </div>
       )}
     </div>
