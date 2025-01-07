@@ -2,10 +2,15 @@
 
 import { useState } from 'react';
 
+type Quote = {
+  text: string;
+  author: string | null;
+};
+
 export default function HomePage() {
-  const [quote, setQuote] = useState(null);
+  const [quote, setQuote] = useState<Quote | null>(null);
   const [loading, setLoading] = useState(false);
-  const [interpretation, setInterpretation] = useState(null);
+  const [interpretation, setInterpretation] = useState<string | null>(null);
   const [showInterpretation, setShowInterpretation] = useState(false);
   const [interpretationLoading, setInterpretationLoading] = useState(false);
 
@@ -33,7 +38,7 @@ export default function HomePage() {
       const response = await fetch('/api/interpret', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quote: `${quote.text} - ${quote.author}` }),
+        body: JSON.stringify({ quote: `${quote?.text} - ${quote?.author}` }),
       });
       const data = await response.json();
       setInterpretation(data.interpretation || 'Failed to generate interpretation.');
@@ -72,7 +77,7 @@ export default function HomePage() {
           fontWeight: 'bold',
         }}
       >
-        {loading ? 'Loading....' : 'Get a Quote today'}
+        {loading ? 'Loading...' : 'Get a Quote'}
       </button>
       {quote && (
         <div
