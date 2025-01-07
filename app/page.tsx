@@ -9,10 +9,10 @@ type Quote = {
 
 export default function HomePage() {
   const [quote, setQuote] = useState<Quote | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [interpretation, setInterpretation] = useState<string | null>(null);
-  const [showInterpretation, setShowInterpretation] = useState(false);
-  const [interpretationLoading, setInterpretationLoading] = useState(false);
+  const [showInterpretation, setShowInterpretation] = useState<boolean>(false);
+  const [interpretationLoading, setInterpretationLoading] = useState<boolean>(false);
 
   const fetchQuote = async () => {
     setLoading(true);
