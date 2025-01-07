@@ -23,10 +23,16 @@ export default function HomePage() {
       const data = await response.json();
 
       const [quoteText, author] = data.quote.split(' - ');
-      setQuote({ text: quoteText.trim(), author: author ? author.trim() : 'Unknown' });
+      setQuote({
+        text: quoteText.trim(),
+        author: author ? author.trim() : 'Unknown',
+      });
     } catch (error) {
       console.error('Error fetching quote:', error);
-      setQuote({ text: 'Failed to fetch a quote. Please try again later.', author: null });
+      setQuote({
+        text: 'Failed to fetch a quote. Please try again later.',
+        author: null,
+      });
     } finally {
       setLoading(false);
     }
